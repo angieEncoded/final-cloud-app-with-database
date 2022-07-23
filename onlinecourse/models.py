@@ -13,6 +13,7 @@ import uuid
 
 # Instructor model
 class Instructor(models.Model):
+    id = models.AutoField(primary_key=True)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -26,6 +27,7 @@ class Instructor(models.Model):
 
 # Learner model
 class Learner(models.Model):
+    id = models.AutoField(primary_key=True)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -55,6 +57,7 @@ class Learner(models.Model):
 
 # Course model
 class Course(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(null=False, max_length=30, default='online course')
     image = models.ImageField(upload_to='course_images/')
     description = models.CharField(max_length=1000)
@@ -71,6 +74,7 @@ class Course(models.Model):
 
 # Lesson model
 class Lesson(models.Model):
+    id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=200, default="title")
     order = models.IntegerField(default=0)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -81,6 +85,7 @@ class Lesson(models.Model):
 # <HINT> Once a user enrolled a class, an enrollment entry should be created between the user and course
 # And we could use the enrollment to track information such as exam submissions
 class Enrollment(models.Model):
+    id = models.AutoField(primary_key=True)
     AUDIT = 'audit'
     HONOR = 'honor'
     BETA = 'BETA'
@@ -98,7 +103,7 @@ class Enrollment(models.Model):
 
 # My Question model
 class Question(models.Model):
-
+    id = models.AutoField(primary_key=True)
     # <HINT> A sample model method to calculate if learner get the score of the question
     def is_get_score(self, selected_ids):
        all_answers = self.choice_set.filter(is_correct=True).count()
@@ -117,11 +122,13 @@ class Question(models.Model):
         (EASY, "Easy"),
     ]
     associated_course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="question_course")
+    # associated_lesson = models.ForeignKey(Lesson, null=True, on_delete=models.CASCADE, related_name="question_lesson")
     question_text = models.TextField()
     grade_point = models.IntegerField()
     difficulty_level = models.CharField(max_length=20, choices=DIFFICULTY_RATING, default=MEDIUM)
 
 class Choice(models.Model):
+    id = models.AutoField(primary_key=True)
     CORRECT = "Correct"
     INCORRECT = "Incorrect"
     UNSCORED = "Unscored"
@@ -131,7 +138,7 @@ class Choice(models.Model):
         (UNSCORED, "Unscored")
     ]
 
-    associated_question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="question_choice")
+    associated_question = models.ForeignKey(Question, null=False, on_delete=models.CASCADE, related_name="question_choice")
     choice_text = models.TextField()
     question_status = models.CharField(max_length=20, choices=QUESTION_CORRECTNESS, default=INCORRECT)
 
@@ -141,5 +148,6 @@ class Choice(models.Model):
 # One submission could have multiple choices
 # One choice could belong to multiple submissions
 class Submission(models.Model):
+   id = models.AutoField(primary_key=True)
    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
    choices = models.ManyToManyField(Choice)
